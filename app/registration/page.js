@@ -24,7 +24,8 @@ const RegistrationPage = () => {
     const formik = useFormik({
         initialValues: initialValues,
         validationSchema: registrationSchema,
-        onSubmit: (values, action) => {
+        onSubmit: async (values, action) => {
+            await fetch("http://localhost:5000/", {method: "POST", headers: {"Content-Type": "application/json"}, body: JSON.stringify(values)})
             console.log(values)
             action.resetForm()
         }
