@@ -2,6 +2,12 @@
 import React from 'react'
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
+import { useRouter } from 'next/navigation';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
+const RegistrationPage = () => {
+    const router = useRouter()
 
 const registrationSchema = Yup.object({
     fullname: Yup.string().min(2).required('Name is required'),
@@ -20,7 +26,7 @@ const initialValues = {
     phone: "",
 }
 
-const RegistrationPage = () => {
+
     const formik = useFormik({
         initialValues: initialValues,
         validationSchema: registrationSchema,
@@ -28,12 +34,35 @@ const RegistrationPage = () => {
             await fetch("http://localhost:5000/", {method: "POST", headers: {"Content-Type": "application/json"}, body: JSON.stringify(values)})
             console.log(values)
             action.resetForm()
+            setTimeout(() => {
+                router.push('/dashboard')                
+            }, 6000);
+            toast.success('Form Submitted!', {
+                position: "top-right",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "dark",
+                });
         }
     })
 
-
   return (
     <div>
+        <ToastContainer position="top-right"
+            autoClose={5000}
+            hideProgressBar={false}
+            newestOnTop={false}
+            closeOnClick
+            rtl={false}
+            pauseOnFocusLoss
+            draggable
+            pauseOnHover
+            theme="dark"/>
+
         <h1 className='text-2xl font-bold text-center py-10'>Registration Form</h1>
         <form onSubmit={formik.handleSubmit} className="max-w-md mx-auto">
             <div className="relative z-0 w-full mb-5 group">
@@ -61,7 +90,7 @@ const RegistrationPage = () => {
                 <label htmlFor="phone" className="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-2 z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">Phone number (123-456-7890)*</label>
                 { formik.errors.phone && formik.touched.phone? <p className='text-red-500 text-xs z-10'>{formik.errors.phone}</p>: null }
             </div>
-            <button type="submit" className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Submit</button>
+            <button type="submit" disabled={formik.errors.email || formik.errors.fullname || formik.errors.password || formik.errors.repeat_password || formik.errors.phone } className="text-white bg-blue-700 hover:bg-blue-800 disabled:bg-slate-600 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 transition-all duration-300">Submit</button>
         </form>
     </div>
   )
